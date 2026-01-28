@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypted Message</title>
+
+    <style>
+        :root {
+            --primary-color: #df2e96;
+            --bg-color: black;
+            --font-size: 16px;
+            --cursor-width: 0.6ch;
+            --cursor-height: 1em;
+            --prompt-color: #ffff00;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-color);
+            color: var(--primary-color);
+            font-family: 'Courier New', monospace;
+            font-size: var(--font-size);
+            overflow-x: hidden;
+        }
+
+        /* === CENTERING WRAPPER === */
+        .terminal-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            width: 100%;
+            padding: 20px;
+        }
+
+        /* === TERMINAL === */
+        #menu {
+            white-space: pre;
+            line-height: 1.2;
+            transform-origin: top center;
+            margin: 0 auto;
+        }
+
+        /* === RESPONSIVE SCALING === */
+        @media (max-width: 1200px) {
+            #menu {
+                transform: scale(0.9);
+            }
+        }
+
+        @media (max-width: 900px) {
+            #menu {
+                transform: scale(0.8);
+            }
+        }
+
+        @media (max-width: 600px) {
+            #menu {
+                transform: scale(0.7);
+            }
+        }
+
+        /* === VISIBILITY === */
+        .hidden {
+            display: none !important;
+        }
+
+        .visible {
+            display: block;
+        }
+
+        /* === CURSOR === */
+        .cursor {
+            display: inline-block;
+            width: var(--cursor-width);
+            height: var(--cursor-height);
+            background: var(--primary-color);
+            animation: blink 0.7s infinite;
+            vertical-align: bottom;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="terminal-wrapper">
+
+        <pre id="menuNormal" class="hidden" aria-hidden="true">
+..                                 
+                                                                   .                        
+                                       .              .   .::.                               
+                                   :--===--:         .-:.:::---:.                            
+       ::.                      . :---+-:--=-:-.     :==::..:----=.                          
+     .*#*#.          ..   .     :=---:--::-+*+-      .=.::::---::==.                         
+.-=-.+#*#%-      .::--:---=.    :=+-::--:--+*+-     :-.::::-::----:                          
+=%####**#%.     -=----:--+=-.   --*:::::::-+=+-     .+:...::::-=--.            :-..-=:       
+ :####*#%*.    .:::.:--:-====.  :-=::::::--+==-    ..:...:::::---.            .+###*#=       
+    -###%:    -+:::.::---:====  .=--::-----++=:    ......::::::-:         .     =###=        
+       =*.     ==--::::-----==-  ==------=--=+.     -...::::::-:                 =*.         
+               .-+-::::------==   =----===++==.     :-..:::-:-:    :+===:                    
+                :-+=-------==*+   .+====+++*- :---::::::==-:.  .-:-+-::=-::                  
+                 :==---======+*..  .--=+++-  .--:----:=-=   .:--:==:::::::-=.                
+                  .==========+-::-:-- .*+ .=-:::--:.:-:::..-==::--:::-----=--                
+                    .-+++++---------=-.*= :+-::::--:===---===-::::----::---=+-    .:.        
+     .**=       .     .:.:++-::-------=*= :-:.::------=:=++*+-------::::--===:    -##++*+.   
+  .=+**#*.         .::==-:-+-::::::::--== :::::--:----=.-+=*+------:::::-==.      .*#*##-    
+  .+####*.       :---::----=-::::::::::==.---::::::::-=.=+*#===-------:==:         -##=.     
+      :+=    .  :-:::::------:........-+**=--:..:::::=-=+*%%*---------+-           ..        
+                ::::--:::::-=--......:=+*#+=-....::::--=#%%*:++::----.                       
+                -=::::::::::====:...:=##***+-:....::==#%#*=:+=              ..               
+                 .-=::::::::-+*=+%%#*#%##*+*-.==:-+##%##+-:+-      ...-+*+=+:                
+          .-:      -=::::----+%+==%%*%%#*=++**=*#@%%%##+%+=   .-====+==-                     
+            .==.    .==-----=:#%===%*#%#=:++===-#@%%#.=#+* :+++===-=-.                       
+               ==-:    ..  =#.=#=-=#*+*#+.:====#@%%+.=%+#*%%*=--===.      .=+#*:             
+                .===--:     :=+**.=+%=#%*.:+==.*@#-.=#*####==*##-     -=-#:                  
+                 .==----=--: .=%#=*=%*#**:#*+*=#+---*#*##*###=.  .=++=+=.                    
+              .   .-+=---=-:--=*%#*%*%**=:*+++#=:-+***###*-.:=++**+=+-.                      
+              .    .=*======-++++%@%%#+*++==+##=+***#%%#:-=++++++==-.                        
+                    .=*+=+*+**++++*@@#+*:#++##****#%@%:-++++++==-+-    ..                    
+                      =**++***+*++**@%**:+:-*#**#%@@+-+++++===--=:                           
+                       .=******=%++*#@*#=*-+**#%%%%%+---=--::--:                .:   ..      
+          .-=-======:..    -+*##+@%***##@@*+##@%#%#+-::--=++=:                  .*##=*##:     
+       ....        :====-:. -##%+%%=*#%@%*+#@%#%*---++++-:=+===+***=:..         :##**#*.     
+                     :====++==#%*%% +#@@*-#@%#%+=-=:..**#*=====--:.  :=-.        -###-       
+                       .=+++++*%%+#-=+%@##@%*##%- .=****====:           .:.       --         
+                            -+*##%#%-#+@@%%*#%%: =***++=-.                :.                 
+                               :##%#-%*%@%*%%%--+*++:...                                     
+                  ..            .#*#@%*##*%@@#+*#-:.                                         
+                 .:.             :#%@%+*#%@%##=.       .                                     
+                                  #*@@*%#%%#=.        ....                                   
+                     ..        ..::=+*###*+.          .                                     
+                            ....:-+=-==::--.                                                
+                           ....--*%#:.=###*:                                                
+                            .. -.#%+..:=#%*--.                                                
+                              :.=+#*.=.-+%+--.                                                
+                             :: +**=:*:.=#=::                                               
+                            .: -=@*=:#%%##=:-.                                              
+                           .:: =##=+:##%##=:-.                                              
+                           :: -+@=+*=**%#*=:-.                                              
+                          ::..=%@=*#-=*###+:-.                                              
+                             =*#%=#*:=%**#*.                                                
+                            .=##+=*+:-%###=                                                 
+                            .=..#+**--#++#=.                                                
+                                 :+-+*#:.+-.                                                
+                                     .        </pre>
+
+        <pre id="menu" class="hidden" role="main">
+    </pre>
+
+    </div>
+
+    <script>
+        class EncryptedMessage {
+            constructor() {
+                this.charTable = Array.from(
+                    "!\"#$%&'()*+,-~./:;<=>?[\\]_{}ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789▒▓█▄▌▐▀"
+                );
+
+                this.menuElement = null;
+                this.originalText = '';
+                this.messageText = '';
+                this.artText = '';
+                this.encryptedDisplayText = '';
+                this.promptText = '\n\nHit Enter To Decrypt...';
+                this.isDecrypting = false;
+                this.intervals = [];
+
+                this.init();
+            }
+
+            init() {
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => this.setup());
+                } else {
+                    this.setup();
+                }
+            }
+
+            setup() {
+                this.menuElement = document.getElementById('menu');
+                const menuNormalElement = document.getElementById('menuNormal');
+
+                this.originalText = menuNormalElement.textContent.trim();
+                this.separateMessageAndArt();
+
+                setTimeout(() => this.displayTerminal(), 1000);
+            }
+
+            separateMessageAndArt() {
+                const lines = this.originalText.split('\n');
+                const artStartIndex = lines.findIndex(l => l.includes('⠀'));
+
+                this.messageText = artStartIndex !== -1
+                    ? lines.slice(0, artStartIndex).join('\n')
+                    : this.originalText;
+
+                this.artText = artStartIndex !== -1
+                    ? lines.slice(artStartIndex).join('\n')
+                    : '';
+            }
+
+            getRandomChar() {
+                return this.charTable[Math.floor(Math.random() * this.charTable.length)];
+            }
+
+            encryptText(text) {
+                return text.split('').map(c =>
+                    c === ' ' || c === '\n' ? c : this.getRandomChar()
+                ).join('');
+            }
+
+            displayCharacter(text, i = 0, out = '') {
+                if (i >= text.length) {
+                    this.showDecryptPrompt(out);
+                    return;
+                }
+
+                // Batch process characters for speed
+                const batchSize = 3;
+                let nextChunk = '';
+                let nextI = i;
+
+                for (let k = 0; k < batchSize && nextI < text.length; k++) {
+                    nextChunk += text[nextI];
+                    nextI++;
+                }
+
+                this.menuElement.innerHTML = out + nextChunk + '<span class="cursor"></span>';
+                requestAnimationFrame(() => this.displayCharacter(text, nextI, out + nextChunk));
+            }
+
+            showDecryptPrompt(text) {
+                this.encryptedDisplayText = text;
+                let i = 0;
+
+                const type = () => {
+                    if (i > this.promptText.length) {
+                        this.menuElement.innerHTML = text + this.promptText + '<span class="cursor"></span>';
+                        this.setupDecryptListener();
+                        return;
+                    }
+                    this.menuElement.innerHTML = text + this.promptText.slice(0, i++) + '<span class="cursor"></span>';
+                    setTimeout(type, 15);
+                };
+                type();
+            }
+
+            setupDecryptListener() {
+                document.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' && !this.isDecrypting) {
+                        this.isDecrypting = true;
+                        this.menuElement.textContent = this.encryptedDisplayText;
+                        this.startDecryption();
+                    }
+                }, { once: true });
+            }
+
+            startDecryption() {
+                const charsPerFrame = 15; // Speed multiplier
+
+                const decrypt = () => {
+                    let cur = this.menuElement.textContent;
+                    if (cur === this.originalText) return;
+
+                    let chars = cur.split('');
+                    const target = this.originalText;
+
+                    // Batch replace characters per frame
+                    for (let k = 0; k < charsPerFrame; k++) {
+                        const i = Math.floor(Math.random() * chars.length);
+                        chars[i] = target[i];
+                    }
+
+                    const newText = chars.join('');
+                    this.menuElement.textContent = newText;
+
+                    if (newText !== this.originalText) {
+                        requestAnimationFrame(decrypt);
+                    }
+                };
+                requestAnimationFrame(decrypt);
+            }
+
+            displayTerminal() {
+                this.menuElement.classList.remove('hidden');
+                this.menuElement.classList.add('visible');
+                this.displayCharacter(this.encryptText(this.originalText));
+            }
+        }
+
+        new EncryptedMessage();
+    </script>
+
+</body>
+
+</html>
